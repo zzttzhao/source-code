@@ -189,6 +189,7 @@ final Node<K,V>[] resize() {
                     Node<K,V> next;
                     do {
                         next = e.next;
+                        // 原来的坐标没变化
                         if ((e.hash & oldCap) == 0) {
                             if (loTail == null)
                                 loHead = e;
@@ -196,6 +197,7 @@ final Node<K,V>[] resize() {
                                 loTail.next = e;
                             loTail = e;
                         }
+                        // 原来的坐标增加oldCap
                         else {
                             if (hiTail == null)
                                 hiHead = e;
