@@ -23,6 +23,17 @@ public class Hashtable<K,V>
 }
 ```
 
+###### Entry结点
+
+```java
+private static class Entry<K,V> implements Map.Entry<K,V> {
+    final int hash;
+    final K key;
+    V value;
+    Entry<K,V> next;
+}
+```
+
 ###### put方法
 
 ```java

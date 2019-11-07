@@ -35,6 +35,19 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 }
 ```
 
+###### Node结点
+
+```java
+static class Node<K,V> implements Map.Entry<K,V> {
+    final int hash;
+    final K key;
+    V value;
+    Node<K,V> next;
+}
+```
+
+
+
 ###### hash值的计算
 
 ```java
