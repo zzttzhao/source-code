@@ -11,7 +11,7 @@ public class LinkedList<E>
 {
     transient int size = 0;
     transient Node<E> first;
-	transient Node<E> last;
+    transient Node<E> last;
     private static final long serialVersionUID = 876323262645176354L;
 }
 ```
