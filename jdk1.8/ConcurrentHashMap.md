@@ -18,7 +18,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     private static final int DEFAULT_CONCURRENCY_LEVEL = 16;
     // 默认填充因子
     private static final float LOAD_FACTOR = 0.75f;
-	// 桶(bucket)上的结点数大于这个值会转为红黑树  
+    // 桶(bucket)上的结点数大于这个值会转为红黑树  
     static final int TREEIFY_THRESHOLD = 8;
     // 桶(bucket)上的结点数小于这个值会转为链表
     static final int UNTREEIFY_THRESHOLD = 6;
