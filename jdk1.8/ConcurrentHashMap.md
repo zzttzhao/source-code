@@ -30,13 +30,14 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     private static int RESIZE_STAMP_BITS = 16;
     // 进行扩容允许的最大线程数
     private static final int MAX_RESIZERS = (1 << (32 - RESIZE_STAMP_BITS)) - 1;
-    // 
+    // sizeCtl中记录size大小的偏移量
     private static final int RESIZE_STAMP_SHIFT = 32 - RESIZE_STAMP_BITS;
     // hash值为-1，表示是forwarding结点
     static final int MOVED     = -1; // hash for forwarding nodes
-    // hash值为-2，表示是树结点
+    // hash值为-2，表示是树根结点
     static final int TREEBIN   = -2; // hash for roots of trees
     static final int RESERVED  = -3; // hash for transient reservations
+    // 计算hash时进行按位与计算，消除负hash
     static final int HASH_BITS = 0x7fffffff; // usable bits of normal node hash
     // 存放元素的数组
     transient volatile Node<K,V>[] table;
@@ -64,6 +65,7 @@ static class Node<K,V> implements Map.Entry<K,V> {
 
 ```java
 static final int spread(int h) {
+    // 比HashMap的hash值计算多了一步按位与计算，消除负hash
     return (h ^ (h >>> 16)) & HASH_BITS;
 }
 ```
@@ -73,6 +75,7 @@ static final int spread(int h) {
 ```java
 private final Node<K,V>[] initTable() {
     Node<K,V>[] tab; int sc;
+    // 死循环，完成初始化
     while ((tab = table) == null || tab.length == 0) {
         // table正在被某个线程初始化
         if ((sc = sizeCtl) < 0)
@@ -130,7 +133,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
             tab = helpTransfer(tab, f);
         else {
             V oldVal = null;
-            // 加锁
+            // 对桶中的第一个元素加锁
             synchronized (f) {
                 if (tabAt(tab, i) == f) {
                     // 为链表结点
@@ -201,7 +204,7 @@ public V get(Object key) {
             if ((ek = e.key) == key || (ek != null && key.equals(ek)))
                 return e.val;
         }
-        // 为红黑树
+        // 为红黑树或者正在扩容
         else if (eh < 0)
             return (p = e.find(h, key)) != null ? p.val : null;
         // 为链表
