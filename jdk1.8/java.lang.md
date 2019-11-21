@@ -2,7 +2,7 @@
 
 
 
-###### Object
+##### Object
 
 ```java
 public class Object {
@@ -48,3 +48,31 @@ public class Object {
     
 ```
 
+1 equals()、hashCode()
+
+两个对象equals为true，这两个对象的hash值相等；两个对象equals为false，这两个对象的hash值不一定不同
+
+2 wait()、notify/notifyAll()
+
+线程执行wait()方法，会释放当前的锁，让出CPU，进入等待状态
+
+
+
+##### String
+
+###### 类的属性
+
+```java
+public final class String
+    implements java.io.Serializable, Comparable<String>, CharSequence {
+    // 用来存储字符串
+    private final char value[];
+    // 缓存字符串的hash值
+    private int hash; // Default to 0
+    private static final long serialVersionUID = -6849794470754667710L;
+}
+```
+
+1 equals()
+
+比较两个字符串的内容
