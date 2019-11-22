@@ -15,6 +15,7 @@ public class Object {
     // 返回对象的hash值
     public native int hashCode();
     // 比较对象的内存地址
+    // 两个对象equals为true，这两个对象的hash值相等；两个对象equals为false，这两个对象的hash值不一定不同
     public boolean equals(Object obj) {
         return (this == obj);
     }
@@ -40,6 +41,7 @@ public class Object {
         }
         wait(timeout);
     }
+    // 线程执行wait()方法，会释放当前的锁，让出CPU，进入等待状态
     public final void wait() throws InterruptedException {
         wait(0);
     }
@@ -47,16 +49,6 @@ public class Object {
 }
     
 ```
-
-1 equals()、hashCode()
-
-两个对象equals为true，这两个对象的hash值相等；两个对象equals为false，这两个对象的hash值不一定不同
-
-2 wait()、notify/notifyAll()
-
-线程执行wait()方法，会释放当前的锁，让出CPU，进入等待状态
-
-
 
 ##### String
 
@@ -73,6 +65,49 @@ public final class String
 }
 ```
 
-1 equals()
+###### equals方法
 
-比较两个字符串的内容
+```java
+// 比较两个字符串的内容
+public boolean equals(Object anObject) {
+    if (this == anObject) {
+        return true;
+    }
+    if (anObject instanceof String) {
+        String anotherString = (String)anObject;
+        int n = value.length;
+        if (n == anotherString.value.length) {
+            char v1[] = value;
+            char v2[] = anotherString.value;
+            int i = 0;
+            
+            while (n-- != 0) {
+                if (v1[i] != v2[i])
+                    return false;
+                i++;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+```
+
+###### hashCode方法
+
+```java
+public int hashCode() {
+    int h = hash;
+    if (h == 0 && value.length > 0) {
+        char val[] = value;
+
+        for (int i = 0; i < value.length; i++) {
+            // 31 * i = (i << 5) - i
+            h = 31 * h + val[i];
+        }
+        hash = h;
+    }
+    return h;
+}
+```
+
