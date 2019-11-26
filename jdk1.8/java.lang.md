@@ -111,3 +111,86 @@ public int hashCode() {
 }
 ```
 
+##### AbstractStringBuilder
+
+###### 类的属性
+
+```java
+abstract class AbstractStringBuilder implements Appendable, CharSequence {
+    // 存储字符序列中的字符，动态数组，存储容量不足时会扩容
+    char[] value;
+    // value数组中已存储的字符数
+    int count;
+}
+```
+
+###### append方法
+
+```java
+public AbstractStringBuilder append(String str) {
+    if (str == null)
+        return appendNull();
+    int len = str.length();
+    ensureCapacityInternal(count + len);
+    // 将原来的数据复制到扩容后的数组中
+    str.getChars(0, len, value, count);
+    count += len;
+    return this;
+}
+```
+
+###### 扩容方法
+
+```java
+private void ensureCapacityInternal(int minimumCapacity) {
+    // overflow-conscious code
+    if (minimumCapacity - value.length > 0) {
+        value = Arrays.copyOf(value,
+                              newCapacity(minimumCapacity));
+    }
+}
+
+private int newCapacity(int minCapacity) {
+    // 新容量为原容量的2倍加2
+    int newCapacity = (value.length << 1) + 2; // overflow-conscious code
+    if (newCapacity - minCapacity < 0) {
+        newCapacity = minCapacity;
+    }
+    return (newCapacity <= 0 || MAX_ARRAY_SIZE - newCapacity < 0)
+        ? hugeCapacity(minCapacity)
+        : newCapacity;
+}
+
+private int hugeCapacity(int minCapacity) {
+    if (Integer.MAX_VALUE - minCapacity < 0) { // overflow
+        throw new OutOfMemoryError();
+    }
+    return (minCapacity > MAX_ARRAY_SIZE)
+        ? minCapacity : MAX_ARRAY_SIZE;
+}
+```
+
+##### StringBuilder
+
+```java
+// 线程不安全
+public final class StringBuilder
+    extends AbstractStringBuilder
+    implements java.io.Serializable, CharSequence
+{
+}
+```
+
+##### StringBuffer
+
+```java
+// 线程安全 
+public final class StringBuffer
+    extends AbstractStringBuilder
+    implements java.io.Serializable, CharSequence
+{
+    // 用来缓存上一次toString方法的返回值，一旦修改StringBuffer，置为null
+    private transient char[] toStringCache;
+}
+```
+
