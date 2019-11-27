@@ -10,11 +10,11 @@
 public final class Boolean implements java.io.Serializable,
                                       Comparable<Boolean>
 {
-	public static final Boolean TRUE = new Boolean(true);
-	public static final Boolean FALSE = new Boolean(false);
+    public static final Boolean TRUE = new Boolean(true);
+    public static final Boolean FALSE = new Boolean(false);
     // 获取该类的原始类
-	public static final Class<Boolean> TYPE = (Class<Boolean>) Class.getPrimitiveClass("boolean");
-	// Boolean的值
+    public static final Class<Boolean> TYPE = (Class<Boolean>) Class.getPrimitiveClass("boolean");
+    // Boolean的值
     private final boolean value;
 }
 ```
@@ -62,10 +62,10 @@ private static class ByteCache {
 
 ```java
 public final class Short extends Number implements Comparable<Short> {
-	// 最小值-2^15
-	public static final short MIN_VALUE = -32768; 
+    // 最小值-2^15
+    public static final short MIN_VALUE = -32768; 
     // 最大值2^15-1
-	public static final short MAX_VALUE = 32767;
+    public static final short MAX_VALUE = 32767;
     // 获取该类的原始类
     public static final Class<Short> TYPE = (Class<Short>) Class.getPrimitiveClass("short"); 
     // Short的值
