@@ -48,7 +48,7 @@ private static class ByteCache {
     private ByteCache(){}
 
     static final Byte cache[] = new Byte[-(-128) + 127 + 1];
-	// 静态代码块，类加载时执行，初始化cache数组
+    // 静态代码块，类加载时执行，初始化cache数组
     static {
         for(int i = 0; i < cache.length; i++)
             cache[i] = new Byte((byte)(i - 128));
@@ -114,10 +114,10 @@ public static Short valueOf(short s) {
 
 ```java
 public final class Integer extends Number implements Comparable<Integer> {
-	// 最小值-2^31
+    // 最小值-2^31
     @Native public static final int MIN_VALUE = 0x80000000;
     // 最大值2^31-1
-	@Native public static final int MAX_VALUE = 0x7fffffff;
+    @Native public static final int MAX_VALUE = 0x7fffffff;
     // 获取该类的原始类
     public static final Class<Integer>  TYPE = (Class<Integer>) Class.getPrimitiveClass("int");
     // Integer的值
