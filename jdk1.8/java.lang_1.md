@@ -93,3 +93,115 @@ private static class ShortCache {
 }
 ```
 
+###### valueOf方法
+
+```java
+public static Short valueOf(short s) {
+    final int offset = 128;
+    int sAsInt = s;
+    if (sAsInt >= -128 && sAsInt <= 127) { // must cache
+        // 从缓存获取
+        return ShortCache.cache[sAsInt + offset];
+    }
+    // 创建实例对象
+    return new Short(s);
+}
+```
+
+##### Integer
+
+###### 类的属性
+
+```java
+public final class Integer extends Number implements Comparable<Integer> {
+	// 最小值-2^31
+    @Native public static final int MIN_VALUE = 0x80000000;
+    // 最大值2^31-1
+	@Native public static final int MAX_VALUE = 0x7fffffff;
+    // 获取该类的原始类
+    public static final Class<Integer>  TYPE = (Class<Integer>) Class.getPrimitiveClass("int");
+    // Integer的值
+    private final int value;
+    // 位数
+    @Native public static final int SIZE = 32;
+    // 字节数，占用4个字节
+    public static final int BYTES = SIZE / Byte.SIZE;
+}
+```
+
+###### 缓存
+
+```java
+// 加载Integer类时，将-128~high加载到内存中
+private static class IntegerCache {
+    static final int low = -128;
+    static final int high;
+    static final Integer cache[];
+
+    static {
+        // high value may be configured by property
+        int h = 127;
+        String integerCacheHighPropValue =
+            sun.misc.VM.getSavedProperty("java.lang.Integer.IntegerCache.high");
+        if (integerCacheHighPropValue != null) {
+            try {
+                int i = parseInt(integerCacheHighPropValue);
+                i = Math.max(i, 127);
+                // Maximum array size is Integer.MAX_VALUE
+                h = Math.min(i, Integer.MAX_VALUE - (-low) -1);
+            } catch( NumberFormatException nfe) {
+                // If the property cannot be parsed into an int, ignore it.
+            }
+        }
+        high = h;
+
+        cache = new Integer[(high - low) + 1];
+        int j = low;
+        for(int k = 0; k < cache.length; k++)
+            cache[k] = new Integer(j++);
+
+        // range [-128, 127] must be interned (JLS7 5.1.7)
+        assert IntegerCache.high >= 127;
+    }
+
+    private IntegerCache() {}
+}
+```
+
+##### Long
+
+###### 类的属性
+
+```java
+public final class Long extends Number implements Comparable<Long> {
+    // 最小值-2^63
+    @Native public static final long MIN_VALUE = 0x8000000000000000L;
+    // 最大值2^63-1
+    @Native public static final long MAX_VALUE = 0x7fffffffffffffffL;
+    // 获取该类的原始类
+    public static final Class<Long> TYPE = (Class<Long>) Class.getPrimitiveClass("long");
+    // Long的值
+    private final long value;
+    // 位数
+    @Native public static final int SIZE = 64;
+    // 字节数，占用8个字节
+    public static final int BYTES = SIZE / Byte.SIZE;
+}
+```
+
+###### 缓存
+
+```java
+// 加载Long类时，将-128~127加载到内存中
+private static class LongCache {
+    private LongCache(){}
+
+    static final Long cache[] = new Long[-(-128) + 127 + 1];
+
+    static {
+        for(int i = 0; i < cache.length; i++)
+            cache[i] = new Long(i - 128);
+    }
+}
+```
+
