@@ -205,3 +205,69 @@ private static class LongCache {
 }
 ```
 
+##### Float
+
+###### 类的属性
+
+```java
+public final class Float extends Number implements Comparable<Float> {
+    // 正无穷大的常量，等于Float.intBitsToFloat(0x7f800000)的返回值
+    public static final float POSITIVE_INFINITY = 1.0f / 0.0f;
+    // 负无穷大的常量，等于Float.intBitsToFloat(0xff800000)的返回值
+    public static final float NEGATIVE_INFINITY = -1.0f / 0.0f;
+    // Not-a-Number值的常量，等于Float.intBitsToFloat(0x7fc00000)的返回值
+    public static final float NaN = 0.0f / 0.0f;
+    // 最大正有限值
+    public static final float MAX_VALUE = 0x1.fffffeP+127f; // 3.4028235e+38f
+    // 最小正正常值
+    public static final float MIN_NORMAL = 0x1.0p-126f; // 1.17549435E-38f
+    // 最小正非零值
+    public static final float MIN_VALUE = 0x0.000002P-126f; // 1.4e-45f
+    // 最大指数
+    public static final int MAX_EXPONENT = 127;
+    // 最小指数
+    public static final int MIN_EXPONENT = -126;
+    // 位数
+    public static final int SIZE = 32;
+    // 字节数，占用4个字节
+    public static final int BYTES = SIZE / Byte.SIZE;
+    // 获取该类的原始类
+    public static final Class<Float> TYPE = (Class<Float>) Class.getPrimitiveClass("float");
+    // Float的值
+    private final float value;
+}
+```
+
+##### Double
+
+###### 类的属性
+
+```java
+public final class Double extends Number implements Comparable<Double> {
+    // 正无穷大的常量，等于Double.longBitsToDouble(0x7ff0000000000000L)的返回值
+    public static final double POSITIVE_INFINITY = 1.0 / 0.0;
+    // 负无穷大的常量，等于Double.longBitsToDouble(0xfff0000000000000L)的返回值
+    public static final double NEGATIVE_INFINITY = -1.0 / 0.0;
+    // Not-a-Number值的常量，等于Double.longBitsToDouble(0x7ff8000000000000L)的返回值
+    public static final double NaN = 0.0d / 0.0;
+    // 最大正有限值
+    public static final double MAX_VALUE = 0x1.fffffffffffffP+1023; // 1.7976931348623157e+308
+    // 最小正正常值
+    public static final double MIN_NORMAL = 0x1.0p-1022; // 2.2250738585072014E-308
+    // 最小正非零值
+    public static final double MIN_VALUE = 0x0.0000000000001P-1022; // 4.9e-324
+    // 最大指数
+    public static final int MAX_EXPONENT = 1023;
+    // 最小指数
+    public static final int MIN_EXPONENT = -1022;
+    // 位数
+    public static final int SIZE = 64;
+    // 字节数，占用8个字节
+    public static final int BYTES = SIZE / Byte.SIZE;
+    // 获取该类的原始类
+    public static final Class<Double> TYPE = (Class<Double>) Class.getPrimitiveClass("double");
+    // Double的值
+    private final double value;
+}
+```
+
