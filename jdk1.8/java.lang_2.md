@@ -10,15 +10,15 @@
 public
 class Thread implements Runnable {
     // 线程名
-	private volatile String name;
+    private volatile String name;
     // 线程优先级
-	private int priority;
-	private Thread threadQ;
-	private long eetop;
+    private int priority;
+    private Thread threadQ;
+    private long eetop;
     // 是否单步执行此线程
-	private boolean single_step;
+    private boolean single_step;
     // 此线程是否为守护线程
-	private boolean daemon = false;
+    private boolean daemon = false;
     // JVM状态
     private boolean  stillborn = false;
     // run方法执行的目标代码
@@ -28,34 +28,35 @@ class Thread implements Runnable {
     // 此线程的类加载器
     private ClassLoader contextClassLoader;
     // 此线程继承的访问控制上下文
-	private AccessControlContext inheritedAccessControlContext;
+    private AccessControlContext inheritedAccessControlContext;
     // 用于自动编号的匿名线程
     private static int threadInitNumber;
-    // 此线程的本地变量值，是一个用于维护线程本地变量的hashmap
+    // 此线程的本地变量值，用于维护线程本地变量的hashmap，由ThreadLocal类进行维护
     ThreadLocal.ThreadLocalMap threadLocals = null;
-    // 
+    // 由继承得到的和此线程相关的本地变量值，由InheritableThreadLocal类进行维护
     ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
-    //
+    // 此线程请求栈的深度，默认值为0
     private long stackSize;
-    // 
+    // 表示:在本地线程终止后,JVM私有的一个状态值
     private long nativeParkEventPointer;
-    //
+    // 线程id
     private long tid;
-    //
+    // 用于生成线程ID
     private static long threadSeqNumber;
     //
     private volatile int threadStatus = 0;
-    //
+    // 
     volatile Object parkBlocker;
-    //
+    // 在可中断I/O操作中，本线程中的此对象会被阻塞
+    // 如果此线程的中断状态位被设置，则应该调用此阻塞对象的中断方法
     private volatile Interruptible blocker;
-    //
+    // 
     private final Object blockerLock = new Object();
-    //
+    // 线程的最低优先级
     public final static int MIN_PRIORITY = 1;
-    //
+    // 线程的默认优先级
     public final static int NORM_PRIORITY = 5;
-    //
+    // 线程的最高优先级
     public final static int MAX_PRIORITY = 10;
     //
     private static final StackTraceElement[] EMPTY_STACK_TRACE
