@@ -20,7 +20,7 @@ class Thread implements Runnable {
     // 此线程是否为守护线程
     private boolean daemon = false;
     // JVM状态
-    private boolean  stillborn = false;
+    private boolean stillborn = false;
     // run方法执行的目标代码
     private Runnable target;
     // 此线程所属的组别
@@ -37,15 +37,15 @@ class Thread implements Runnable {
     ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
     // 此线程请求栈的深度，默认值为0
     private long stackSize;
-    // 表示:在本地线程终止后,JVM私有的一个状态值
+    // 表示在本地线程终止后,JVM的私有状态值
     private long nativeParkEventPointer;
     // 线程id
     private long tid;
     // 用于生成线程ID
     private static long threadSeqNumber;
-    //
+    // 为工具提供的线程状态值，初始化值表示当前线程还未运行
     private volatile int threadStatus = 0;
-    // 
+    // 为用于调用java.util.concurrent.locks.LockSupport.park方法的参数
     volatile Object parkBlocker;
     // 在可中断I/O操作中，本线程中的此对象会被阻塞
     // 如果此线程的中断状态位被设置，则应该调用此阻塞对象的中断方法
@@ -96,3 +96,62 @@ public enum State {
 }
 ```
 
+###### sleep方法
+
+```java
+// 当前线程停止执行指定毫秒数，让出CPU给其他的线程，不会释放锁
+public static native void sleep(long millis) throws InterruptedException;
+```
+
+###### start方法
+
+```java
+// 当前线程执行，JVM会调用此线程的run()方法
+public synchronized void start() {
+}
+```
+
+###### run方法
+
+```java
+// 线程有runnable对象则执行
+public void run() {
+    if (target != null) {
+        target.run();
+    }
+}
+```
+
+###### interrupt方法
+
+```java
+// 中断当前线程，将该线程的中断标记设置为true
+public void interrupt() {
+}
+```
+
+###### 判断线程是否中断
+
+```java
+// 判断当前线程是否被中断，线程的中断状态会被此方法清除
+public static boolean interrupted() {
+    return currentThread().isInterrupted(true);
+}
+
+// 判断当前线程是否被中断，此方法的调用不会影响当前线程的中断状态
+public boolean isInterrupted() {
+    return isInterrupted(false);
+}
+
+private native boolean isInterrupted(boolean ClearInterrupted);
+```
+
+###### join方法
+
+```java
+// 最多等待millis毫秒线程会死亡，参数为0时持续等待
+// 在A线程中调用B线程.join()，表示直到B线程结束，A线程才继续运行
+public final synchronized void join(long millis)
+throws InterruptedException {
+}
+```
