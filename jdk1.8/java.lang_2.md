@@ -155,3 +155,13 @@ public final synchronized void join(long millis)
 throws InterruptedException {
 }
 ```
+
+##### ThreadLocal
+
+###### 类的属性
+
+```java
+public class ThreadLocal<T> {
+}
+```
+
