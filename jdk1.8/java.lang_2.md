@@ -50,7 +50,6 @@ class Thread implements Runnable {
     // 在可中断I/O操作中，本线程中的此对象会被阻塞
     // 如果此线程的中断状态位被设置，则应该调用此阻塞对象的中断方法
     private volatile Interruptible blocker;
-    // 
     private final Object blockerLock = new Object();
     // 线程的最低优先级
     public final static int MIN_PRIORITY = 1;
@@ -58,17 +57,12 @@ class Thread implements Runnable {
     public final static int NORM_PRIORITY = 5;
     // 线程的最高优先级
     public final static int MAX_PRIORITY = 10;
-    //
     private static final StackTraceElement[] EMPTY_STACK_TRACE
         = new StackTraceElement[0];
-    //
     private static final RuntimePermission SUBCLASS_IMPLEMENTATION_PERMISSION =
                     new RuntimePermission("enableContextClassLoaderOverride");
-    //
     private volatile UncaughtExceptionHandler uncaughtExceptionHandler;
     private static volatile UncaughtExceptionHandler defaultUncaughtExceptionHandler;
-    
-    
     long threadLocalRandomSeed;
     int threadLocalRandomProbe;
     int threadLocalRandomSecondarySeed;
@@ -126,6 +120,7 @@ public void run() {
 
 ```java
 // 中断当前线程，将该线程的中断标记设置为true
+// 线程处于阻塞状态，调用interrupt()时，线程退出阻塞状态并抛出InterruptedException异常
 public void interrupt() {
 }
 ```
@@ -162,6 +157,34 @@ throws InterruptedException {
 
 ```java
 public class ThreadLocal<T> {
+}
+```
+
+###### ThreadLocalMap
+
+```java
+static class ThreadLocalMap {
+    // 初始容量，大小总为2的幂次方
+    private static final int INITIAL_CAPACITY = 16;
+    // 存放元素的数组，大小总为2的幂次方
+    private Entry[] table;
+    // 存放的元素个数
+    private int size = 0;
+    // 临界值，当实际大小（存放元素的个数）超过临界值，进行扩容
+    private int threshold; // Default to 0
+}
+```
+
+```java
+// ThreadLocal为key，key为null表示不再被引用，entry可以从table清除
+static class Entry extends WeakReference<ThreadLocal<?>> {
+    /** The value associated with this ThreadLocal. */
+    Object value;
+
+    Entry(ThreadLocal<?> k, Object v) {
+        super(k);
+        value = v;
+    }
 }
 ```
 
