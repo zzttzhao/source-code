@@ -57,15 +57,6 @@ class Thread implements Runnable {
     public final static int NORM_PRIORITY = 5;
     // 线程的最高优先级
     public final static int MAX_PRIORITY = 10;
-    private static final StackTraceElement[] EMPTY_STACK_TRACE
-        = new StackTraceElement[0];
-    private static final RuntimePermission SUBCLASS_IMPLEMENTATION_PERMISSION =
-                    new RuntimePermission("enableContextClassLoaderOverride");
-    private volatile UncaughtExceptionHandler uncaughtExceptionHandler;
-    private static volatile UncaughtExceptionHandler defaultUncaughtExceptionHandler;
-    long threadLocalRandomSeed;
-    int threadLocalRandomProbe;
-    int threadLocalRandomSecondarySeed;
 }
 ```
 
