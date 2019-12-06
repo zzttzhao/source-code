@@ -2,9 +2,9 @@
 
 
 
-##### Thread
+#### Thread
 
-###### 类的属性
+##### 类的属性
 
 ```java
 public
@@ -60,7 +60,7 @@ class Thread implements Runnable {
 }
 ```
 
-###### 线程状态枚举值
+##### 线程状态枚举值
 
 ```java
 public enum State {
@@ -81,14 +81,14 @@ public enum State {
 }
 ```
 
-###### sleep方法
+##### sleep方法
 
 ```java
 // 当前线程停止执行指定毫秒数，让出CPU给其他的线程，不会释放锁
 public static native void sleep(long millis) throws InterruptedException;
 ```
 
-###### start方法
+##### start方法
 
 ```java
 // 当前线程执行，JVM会调用此线程的run()方法
@@ -96,7 +96,7 @@ public synchronized void start() {
 }
 ```
 
-###### run方法
+##### run方法
 
 ```java
 // 线程有runnable对象则执行
@@ -107,7 +107,7 @@ public void run() {
 }
 ```
 
-###### interrupt方法
+##### interrupt方法
 
 ```java
 // 中断当前线程，将该线程的中断标记设置为true
@@ -116,7 +116,7 @@ public void interrupt() {
 }
 ```
 
-###### 判断线程是否中断
+##### 判断线程是否中断
 
 ```java
 // 判断当前线程是否被中断，线程的中断状态会被此方法清除
@@ -132,7 +132,7 @@ public boolean isInterrupted() {
 private native boolean isInterrupted(boolean ClearInterrupted);
 ```
 
-###### join方法
+##### join方法
 
 ```java
 // 最多等待millis毫秒线程会死亡，参数为0时持续等待
@@ -142,16 +142,16 @@ throws InterruptedException {
 }
 ```
 
-##### ThreadLocal
-
-###### 类的属性
+#### ThreadLocal
 
 ```java
 public class ThreadLocal<T> {
 }
 ```
 
-###### ThreadLocalMap
+##### ThreadLocalMap
+
+###### 类的属性
 
 ```java
 static class ThreadLocalMap {
@@ -166,6 +166,8 @@ static class ThreadLocalMap {
 }
 ```
 
+###### Entry结点
+
 ```java
 // ThreadLocal为key，key为null表示不再被引用，entry可以从table清除
 static class Entry extends WeakReference<ThreadLocal<?>> {
@@ -176,6 +178,72 @@ static class Entry extends WeakReference<ThreadLocal<?>> {
         super(k);
         value = v;
     }
+}
+```
+
+###### set方法
+
+```java
+private void set(ThreadLocal<?> key, Object value) {
+    Entry[] tab = table;
+    int len = tab.length;
+    // 计算索引
+    int i = key.threadLocalHashCode & (len-1);
+	// 循环，当前索引上的table[i]不为空，在没有结束循环的情况下，用线性探测法获取下一个，解决hash冲突
+    for (Entry e = tab[i];
+         e != null;
+         e = tab[i = nextIndex(i, len)]) {
+        ThreadLocal<?> k = e.get();
+		// 更新value
+        if (k == key) {
+            e.value = value;
+            return;
+        }
+		// key为空，说明被回收了，用新的key-value替换
+        if (k == null) {
+            replaceStaleEntry(key, value, i);
+            return;
+        }
+    }
+	// 找到为空的位置插入值
+    tab[i] = new Entry(key, value);
+    int sz = ++size;
+    // 没有清除任何entry且当前是用量超过长度的2/3，扩容
+    if (!cleanSomeSlots(i, sz) && sz >= threshold)
+        rehash();
+}
+```
+
+###### get方法
+
+```java
+private Entry getEntry(ThreadLocal<?> key) {
+    // 计算索引
+    int i = key.threadLocalHashCode & (table.length - 1);
+    Entry e = table[i];
+    if (e != null && e.get() == key)
+        return e;
+    else
+        return getEntryAfterMiss(key, i, e);
+}
+
+private Entry getEntryAfterMiss(ThreadLocal<?> key, int i, Entry e) {
+    Entry[] tab = table;
+    int len = tab.length;
+
+    while (e != null) {
+        ThreadLocal<?> k = e.get();
+        if (k == key)
+            return e;
+        if (k == null)
+            // 清除无效的entry
+            expungeStaleEntry(i);
+        else
+            // 线性探测法获取下一个
+            i = nextIndex(i, len);
+        e = tab[i];
+    }
+    return null;
 }
 ```
 
