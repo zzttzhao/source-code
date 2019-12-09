@@ -208,7 +208,7 @@ private void set(ThreadLocal<?> key, Object value) {
 	// 找到为空的位置插入值
     tab[i] = new Entry(key, value);
     int sz = ++size;
-    // 没有清除任何entry且当前是用量超过长度的2/3，扩容
+    // 没有清除任何entry且当前使用量超过长度的2/3，扩容
     if (!cleanSomeSlots(i, sz) && sz >= threshold)
         rehash();
 }
