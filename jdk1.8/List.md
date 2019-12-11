@@ -9,7 +9,7 @@ public class ArrayList<E> extends AbstractList<E>
         implements List<E>, RandomAccess, Cloneable, java.io.Serializable
 {
     private static final long serialVersionUID = 8683452581122892189L;
-	// 默认初始容量
+    // 默认初始容量
     private static final int DEFAULT_CAPACITY = 10;
     // 空数组实例，指定容量为0时返回
     private static final Object[] EMPTY_ELEMENTDATA = {};
