@@ -1,6 +1,6 @@
 [TOC]
 
-
+##### HashMap
 
 ###### 类的属性
 
@@ -232,6 +232,120 @@ final Node<K,V>[] resize() {
         }
     }
     return newTab;
+}
+```
+
+##### LinkedHashMap
+
+###### 类的属性
+
+```java
+public class LinkedHashMap<K,V>
+    extends HashMap<K,V>
+    implements Map<K,V>
+{
+    private static final long serialVersionUID = 3801124242820219131L;
+    // 指向双向链表的头结点
+    transient LinkedHashMap.Entry<K,V> head;
+    // 指向双向链表的尾结点
+    transient LinkedHashMap.Entry<K,V> tail;
+    // 指定迭代顺序
+    // true表示基于访问顺序排序，最近访问过的元素放在链表最末尾；false表示按照插入顺序遍历
+    final boolean accessOrder;
+}
+```
+
+###### Entry结点
+
+```java
+// 继承HashMap的Node结点
+static class Entry<K,V> extends HashMap.Node<K,V> {
+    // 用于维护插入Entry的先后顺序
+    Entry<K,V> before, after;
+    Entry(int hash, K key, V value, Node<K,V> next) {
+        super(hash, key, value, next);
+    }
+}
+```
+
+###### put方法
+
+```java
+// 调用HashMap的put方法，重写了部分方法
+Node<K,V> newNode(int hash, K key, V value, Node<K,V> e) {
+    LinkedHashMap.Entry<K,V> p =
+        new LinkedHashMap.Entry<K,V>(hash, key, value, e);
+    linkNodeLast(p);
+    return p;
+}
+
+// 将当前插入的结点设为原始链表的尾结点
+private void linkNodeLast(LinkedHashMap.Entry<K,V> p) {
+    // 用临时变量last记录尾结点tail
+    LinkedHashMap.Entry<K,V> last = tail;
+    // 将尾结点设为当前插入的结点
+    tail = p;
+    // 原来的尾结点为bull，表示当前链表为空
+    if (last == null)
+        // 头结点为当前插入的结点
+        head = p;
+    else {
+        // 原始链表不为空，将当前结点的上结点指向原来的尾结点
+        p.before = last;
+        // 原来的尾结点的下一个结点指向当前插入的结点
+        last.after = p;
+    }
+}
+
+// 把当前结点放到双向链表的尾部
+void afterNodeAccess(Node<K,V> e) { // move node to last
+    LinkedHashMap.Entry<K,V> last;
+    // 基于访问顺序排序且当前结点不是尾结点
+    if (accessOrder && (last = tail) != e) {
+        // 记录当前节点的上一个节点b和下一个节点a
+        LinkedHashMap.Entry<K,V> p =
+            (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;
+        // 设置当前结点的下一个结点为null
+        p.after = null;
+        // 当前结点的前一个结点为null
+        if (b == null)
+            // 头结点为当前结点的下一个结点
+            head = a;
+        else
+            // b的下一个结点指向a
+            b.after = a;
+        if (a != null)
+            // a的前一个结点指向b
+            a.before = b;
+        else
+            // b设为尾结点
+            last = b;
+        if (last == null)
+            // 当前结点设为头结点
+            head = p;
+        else {
+            // 将当前结点放到链表尾部
+            p.before = last;
+            last.after = p;
+        }
+        // 当前结点为尾结点
+        tail = p;
+        ++modCount;
+    }
+}
+```
+
+###### get方法
+
+```java
+public V get(Object key) {
+    Node<K,V> e;
+    if ((e = getNode(hash(key), key)) == null)
+        return null;
+    if (accessOrder)
+        // 将访问过的元素放在链表尾部
+        afterNodeAccess(e);
+    return e.value;
 }
 ```
 
