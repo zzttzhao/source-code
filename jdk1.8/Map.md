@@ -46,8 +46,6 @@ static class Node<K,V> implements Map.Entry<K,V> {
 }
 ```
 
-
-
 ###### hash值的计算
 
 ```java
@@ -492,3 +490,103 @@ protected void rehash() {
 }
 ```
 
+##### TreeMap
+
+###### 类的属性
+
+```java
+public class TreeMap<K,V>
+    extends AbstractMap<K,V>
+    implements NavigableMap<K,V>, Cloneable, java.io.Serializable
+{
+    // key的比较器
+    private final Comparator<? super K> comparator;
+    // 红黑树的根节点
+    private transient Entry<K,V> root;
+    // 存放的元素个数
+    private transient int size = 0;
+    // 结构修改次数
+    private transient int modCount = 0;
+    // 红黑树的节点颜色
+    private static final boolean RED   = false;
+    private static final boolean BLACK = true;
+}
+```
+
+###### Entry结点
+
+```java
+static final class Entry<K,V> implements Map.Entry<K,V> {
+    K key;
+    V value;
+    Entry<K,V> left;
+    Entry<K,V> right;
+    Entry<K,V> parent;
+    boolean color = BLACK;
+}
+```
+
+###### put方法
+
+```java
+public V put(K key, V value) {
+    Entry<K,V> t = root;
+    // 根节点为空，TreeMap中没有元素
+    if (t == null) {
+        compare(key, key); // type (and possibly null) check
+        // 初始化一个结点，赋给root
+        root = new Entry<>(key, value, null);
+        size = 1;
+        modCount++;
+        return null;
+    }
+    int cmp;
+    Entry<K,V> parent;
+    // split comparator and comparable paths
+    Comparator<? super K> cpr = comparator;
+    // 比较器不为空
+    if (cpr != null) {
+        do {
+            parent = t;
+            // 比较新增结点的key和当前结点key的大小
+            cmp = cpr.compare(key, t.key);
+            // 新增结点的key小于当前结点的key
+            if (cmp < 0)
+                // 以当前结点的左子节点作为新的当前结点
+                t = t.left;
+            // 新增结点的key大于当前结点的key
+            else if (cmp > 0)
+                // 以当前结点的右子节点作为新的当前结点
+                t = t.right;
+            else
+                // key相等，则新值覆盖旧值
+                return t.setValue(value);
+        } while (t != null);
+    }
+    else {
+        if (key == null)
+            throw new NullPointerException();
+        @SuppressWarnings("unchecked")
+        Comparable<? super K> k = (Comparable<? super K>) key;
+        do {
+            parent = t;
+            cmp = k.compareTo(t.key);
+            if (cmp < 0)
+                t = t.left;
+            else if (cmp > 0)
+                t = t.right;
+            else
+                return t.setValue(value);
+        } while (t != null);
+    }
+    Entry<K,V> e = new Entry<>(key, value, parent);
+    if (cmp < 0)
+        parent.left = e;
+    else
+        parent.right = e;
+    fixAfterInsertion(e);
+    size++;
+    modCount++;
+    return null;
+}
+```
