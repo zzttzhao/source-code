@@ -111,3 +111,66 @@ private static class Node<E> {
 }
 ```
 
+##### Vector
+
+###### 类的属性
+
+```java
+// 线程安全
+public class Vector<E>
+    extends AbstractList<E>
+    implements List<E>, RandomAccess, Cloneable, java.io.Serializable
+{
+    // 存放元素的数组，默认容量大小为10
+    protected Object[] elementData;
+    // 存放的元素个数
+    protected int elementCount;
+    // 扩容增量，若未设置，默认扩为原容量的2倍
+    protected int capacityIncrement;
+    private static final long serialVersionUID = -2767605614048989439L;
+    // 最大容量
+    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+}
+```
+
+###### 扩容方法
+
+```java
+public synchronized void ensureCapacity(int minCapacity) {
+    if (minCapacity > 0) {
+        modCount++;
+        ensureCapacityHelper(minCapacity);
+    }
+}
+
+private void ensureCapacityHelper(int minCapacity) {
+    // overflow-conscious code
+    if (minCapacity - elementData.length > 0)
+        grow(minCapacity);
+}
+
+private void grow(int minCapacity) {
+    // 当前容量
+    int oldCapacity = elementData.length; // overflow-conscious code
+    // 计算新容量
+    int newCapacity = oldCapacity + ((capacityIncrement > 0) ?
+                                     capacityIncrement : oldCapacity);
+    // 新容量小于最小需要容量
+    if (newCapacity - minCapacity < 0)
+        // 新容量设为最小需要容量
+        newCapacity = minCapacity;
+    // 新容量大于最大容量
+    if (newCapacity - MAX_ARRAY_SIZE > 0)
+        newCapacity = hugeCapacity(minCapacity);
+    elementData = Arrays.copyOf(elementData, newCapacity);
+}
+
+private static int hugeCapacity(int minCapacity) {
+    if (minCapacity < 0) // overflow
+        throw new OutOfMemoryError();
+    return (minCapacity > MAX_ARRAY_SIZE) ?
+        Integer.MAX_VALUE :
+    MAX_ARRAY_SIZE;
+}
+```
+
