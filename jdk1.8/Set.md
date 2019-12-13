@@ -33,3 +33,20 @@ public class LinkedHashSet<E>
 }
 ```
 
+##### TreeSet
+
+###### 类的属性
+
+```java
+// 元素有序，不能重复
+public class TreeSet<E> extends AbstractSet<E>
+    implements NavigableSet<E>, Cloneable, java.io.Serializable
+{
+    // 使用NavigableMap结构存储数据(TreeMap实现NavigableMap接口)
+    private transient NavigableMap<E,Object> m;
+    // 添加元素时，用来作为NavigableMap的value值
+    private static final Object PRESENT = new Object();
+    private static final long serialVersionUID = -2479143000061671589L;
+}
+```
+

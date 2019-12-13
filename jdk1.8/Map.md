@@ -495,6 +495,7 @@ protected void rehash() {
 ###### 类的属性
 
 ```java
+// 基于红黑树实现的有序的key-value集合
 public class TreeMap<K,V>
     extends AbstractMap<K,V>
     implements NavigableMap<K,V>, Cloneable, java.io.Serializable
@@ -579,14 +580,50 @@ public V put(K key, V value) {
                 return t.setValue(value);
         } while (t != null);
     }
+    // 将新增结点设置为parent的子节点
     Entry<K,V> e = new Entry<>(key, value, parent);
+    // 新增结点的key小于parent的key
     if (cmp < 0)
+        // 设为左子节点
         parent.left = e;
     else
         parent.right = e;
+    // 修复操作
     fixAfterInsertion(e);
     size++;
     modCount++;
     return null;
 }
 ```
+
+###### get方法
+
+```java
+public V get(Object key) {
+    Entry<K,V> p = getEntry(key);
+    return (p==null ? null : p.value);
+}
+
+final Entry<K,V> getEntry(Object key) {
+    // Offload comparator-based version for sake of performance
+    if (comparator != null)
+        return getEntryUsingComparator(key);
+    // 比较器为空时，key为空抛出异常
+    if (key == null)
+        throw new NullPointerException();
+    @SuppressWarnings("unchecked")
+    	Comparable<? super K> k = (Comparable<? super K>) key;
+    Entry<K,V> p = root;
+    while (p != null) {
+        int cmp = k.compareTo(p.key);
+        if (cmp < 0)
+            p = p.left;
+        else if (cmp > 0)
+            p = p.right;
+        else
+            return p;
+    }
+    return null;
+}
+```
+
