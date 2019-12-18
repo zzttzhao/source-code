@@ -92,7 +92,28 @@ public static native void sleep(long millis) throws InterruptedException;
 
 ```java
 // 当前线程执行，JVM会调用此线程的run()方法
+// 多次start同一个线程，会抛出异常
 public synchronized void start() {
+    // 线程未开始，状态为NEW时，threadStatus值为0；否则会抛出异常
+    if (threadStatus != 0)
+        throw new IllegalThreadStateException();
+
+    group.add(this);
+
+    boolean started = false;
+    try {
+        start0();
+        started = true;
+    } finally {
+        try {
+            if (!started) {
+                group.threadStartFailed(this);
+            }
+        } catch (Throwable ignore) {
+            /* do nothing. If start0 threw a Throwable then
+                  it will be passed up the call stack */
+        }
+    }
 }
 ```
 
