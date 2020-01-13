@@ -6,14 +6,14 @@
 
 ```java
 public interface Lock {
-	// 获取锁
+    // 获取锁
     void lock();
     // 调用此方法去获取锁时，如果线程正在等待获取锁，则这个线程能够响应中断，即中断线程的等待状态
     void lockInterruptibly() throws InterruptedException;
     // 尝试获取锁，如果获取成功则返回true。方法会立即返回
-	boolean tryLock();
+    boolean tryLock();
     // 在时间期限内未获取锁则返回false。未获取锁会等待一定的时间
-	boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
+    boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
     // 释放锁
     void unlock();
     // 返回绑定到此Lock的新的Condition实例
@@ -80,7 +80,7 @@ abstract static class Sync extends AbstractQueuedSynchronizer {
         }
         return false;
     }
-	// 尝试释放锁
+    // 尝试释放锁
     protected final boolean tryRelease(int releases) {
         int c = getState() - releases;
         if (Thread.currentThread() != getExclusiveOwnerThread())
