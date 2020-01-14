@@ -148,8 +148,117 @@ static final class FairSync extends Sync {
 ##### ReentrantReadWriteLock
 
 ```java
+// 读写锁，写锁是独占的，读锁可以在没有写锁的情况下被多个线程同时持有
 public class ReentrantReadWriteLock
         implements ReadWriteLock, java.io.Serializable {
+    private static final long serialVersionUID = -6992448646407690164L;
+}
+```
+
+###### Sync
+
+```java
+abstract static class Sync extends AbstractQueuedSynchronizer {
+    private static final long serialVersionUID = 6317671515068378041L;
+    static final int SHARED_SHIFT   = 16;
+    // 000000000 00000001 00000000 00000000
+    static final int SHARED_UNIT    = (1 << SHARED_SHIFT);
+    // 000000000 00000000 11111111 11111111
+    static final int MAX_COUNT      = (1 << SHARED_SHIFT) - 1;
+    // 000000000 00000000 11111111 11111111
+    static final int EXCLUSIVE_MASK = (1 << SHARED_SHIFT) - 1;
+    // 高16位存放readLock获取的次数
+    static int sharedCount(int c)    { return c >>> SHARED_SHIFT; }
+    // 低16位存放writeLock获取的次数
+    static int exclusiveCount(int c) { return c & EXCLUSIVE_MASK; }
+    // 尝试释放锁
+    protected final boolean tryRelease(int releases) {
+        // 判断当前线程是否为获取独占锁的线程
+        if (!isHeldExclusively())
+            throw new IllegalMonitorStateException();
+        int nextc = getState() - releases;
+        boolean free = exclusiveCount(nextc) == 0;
+        if (free)
+            setExclusiveOwnerThread(null);
+        setState(nextc);
+        return free;
+    }
+    // 尝试获取锁
+    protected final boolean tryAcquire(int acquires) {
+        Thread current = Thread.currentThread();
+        int c = getState();
+        // writeLock获取的次数
+        int w = exclusiveCount(c);
+        if (c != 0) {
+            // (Note: if c != 0 and w == 0 then shared count != 0)
+            if (w == 0 || current != getExclusiveOwnerThread())
+                return false;
+            if (w + exclusiveCount(acquires) > MAX_COUNT)
+                throw new Error("Maximum lock count exceeded");
+            // Reentrant acquire
+            setState(c + acquires);
+            return true;
+        }
+        if (writerShouldBlock() ||
+            !compareAndSetState(c, c + acquires))
+            return false;
+        setExclusiveOwnerThread(current);
+        return true;
+    }
+}
+
+```
+
+###### NonfairSync非公平模式
+
+```java
+static final class NonfairSync extends Sync {
+    private static final long serialVersionUID = -8159625535654395037L;
+    // writeLock直接获取
+    final boolean writerShouldBlock() {
+        return false; // writers can always barge
+    }
+    // 主要是查看AQS Sync Queue里面head.next节点是否获取writeLock
+    final boolean readerShouldBlock() {
+        return apparentlyFirstQueuedIsExclusive();
+    }
+}
+```
+
+###### FairSync公平模式
+
+```java
+static final class FairSync extends Sync {
+    private static final long serialVersionUID = -2274990926593161451L;
+    // 当前AQS Sync Queue里面是否有前继节点
+    final boolean writerShouldBlock() {
+        return hasQueuedPredecessors();
+    }
+    final boolean readerShouldBlock() {
+        return hasQueuedPredecessors();
+    }
+}
+```
+
+###### ReadLock读锁
+
+```java
+public static class ReadLock implements Lock, java.io.Serializable {
+    private static final long serialVersionUID = -5992448646407690164L;
+    public void lock() {
+        sync.acquireShared(1);
+    }
+}
+```
+
+###### WriteLock写锁
+
+```java
+public static class WriteLock implements Lock, java.io.Serializable {
+    private static final long serialVersionUID = -4992448646407690164L;
+    public void lock() {
+        sync.acquire(1);
+    }
 }
 ```
 
