@@ -32,7 +32,20 @@ public abstract class InputStream implements Closeable {
 ##### OutputStream
 
 ```java
+// 抽象类，表示所有字节输出流实现类的基类
 public abstract class OutputStream implements Closeable, Flushable {
+    // 将指定的字节写入输出流
+    public abstract void write(int b) throws IOException;
+    // 将指定的byte数组的字节全部写入输出流
+    public void write(byte b[]) throws IOException {
+        write(b, 0, b.length);
+    }
+    // 将指定的byte数组中从偏移量off开始的len个字节写入输出流
+    public void write(byte b[], int off, int len) throws IOException {}
+    // 刷新输出流，并强制写出所有缓冲的输出字节
+    public void flush() throws IOException {}
+    // 关闭输出流，并释放与该流有关的所有资源
+    public void close() throws IOException {}
 }
 ```
 
@@ -40,6 +53,16 @@ public abstract class OutputStream implements Closeable, Flushable {
 
 ```java
 public abstract class Reader implements Readable, Closeable {
+    // 试图将字符读入指定的字符缓冲区
+    public int read(java.nio.CharBuffer target) throws IOException {}
+    // 读取单个字符
+    public int read() throws IOException {}
+    // 将字符读入数组
+    public int read(char cbuf[]) throws IOException {
+        return read(cbuf, 0, cbuf.length);
+    }
+    // 将字符读入数组的某一部分，chef--目标缓冲区，off--开始存储字符的偏移量，len--要读取的最多字符数
+    abstract public int read(char cbuf[], int off, int len) throws IOException;
 }
 ```
 
@@ -47,6 +70,20 @@ public abstract class Reader implements Readable, Closeable {
 
 ```java
 public abstract class Writer implements Appendable, Closeable, Flushable {
+    // 写入单个字符
+    public void write(int c) throws IOException {}
+    // 写入字符数组
+    public void write(char cbuf[]) throws IOException {
+        write(cbuf, 0, cbuf.length);
+    }
+    // 写入字符数组的某一部分
+    abstract public void write(char cbuf[], int off, int len) throws IOException;
+    // 写入字符串
+    public void write(String str) throws IOException {
+        write(str, 0, str.length());
+    }
+    // 写入字符串的某一部分
+    public void write(String str, int off, int len) throws IOException {}
 }
 ```
 
